@@ -19,6 +19,7 @@ public class InventoryUI : MonoBehaviour
         {
             var newSlot = Instantiate(Resources.Load("InventorySlot"))as GameObject;
             newSlot.transform.parent = BagUI.transform;
+            newSlot.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate { SlotSelected(newSlot); });
             BagSlots.Add(newSlot);
         }
     }
@@ -28,8 +29,11 @@ public class InventoryUI : MonoBehaviour
         BagSlots[index].GetComponentInChildren<UnityEngine.UI.Text>().text = newText;
     }
 
-    void SlotClicked(GameObject Slot)
+    void SlotSelected(GameObject slot)
     {
-        Debug.Log(Slot.GetComponentInChildren<UnityEngine.UI.Text>().text);
+        if(BagSlots.Contains(slot))
+        {
+            Events.ItemSelected.Invoke(slot.GetComponentInChildren<UnityEngine.UI.Text>().text, BagSlots.IndexOf(slot));            
+        }
     }
 }

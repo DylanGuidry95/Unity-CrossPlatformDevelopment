@@ -7,6 +7,7 @@ public class Events
 {
     public static InventoryUICreationEvent CreateUI = new InventoryUICreationEvent();
     public static InventoryUIEvent ItemAdded = new InventoryUIEvent();
+    public static InventoryUIEvent ItemSelected = new InventoryUIEvent();
 }
 
 public class InventoryUIEvent : UnityEvent<string, int>
