@@ -10,6 +10,7 @@ public class InventoryUI : MonoBehaviour
     private void Awake()
     {
         Events.CreateUI.AddListener(CreateInvetoryUISlots);
+        Events.ItemAdded.AddListener(ModifySlotText);
     }
 
     void CreateInvetoryUISlots(int numslots)
@@ -20,5 +21,15 @@ public class InventoryUI : MonoBehaviour
             newSlot.transform.parent = BagUI.transform;
             BagSlots.Add(newSlot);
         }
+    }
+
+    void ModifySlotText(string newText, int index)
+    {
+        BagSlots[index].GetComponentInChildren<UnityEngine.UI.Text>().text = newText;
+    }
+
+    void SlotClicked(GameObject Slot)
+    {
+        Debug.Log(Slot.GetComponentInChildren<UnityEngine.UI.Text>().text);
     }
 }

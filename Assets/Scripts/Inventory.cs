@@ -8,6 +8,11 @@ public class Inventory : MonoBehaviour
     //public List<ItemSlot> EquipmentSlots;
     public int MaxSlots;
 
+    private void Start()
+    {
+        CreateItemSlots();
+    }
+
     [ContextMenu("CreateSlots")]
     void CreateItemSlots()
     {
@@ -21,14 +26,13 @@ public class Inventory : MonoBehaviour
     }
 
     [ContextMenu("Add Item")]
-    void AddItem()
+    public void AddItem(Item item)
     {
-        var test = ScriptableObject.CreateInstance(typeof(Item)) as Item;
-        test.name = "Testing";
         foreach(var slot in BagSlots)
         {
-            if (slot.AddItem(test))
+            if (slot.AddItem(item))
             {
+                Events.ItemAdded.Invoke(item.Name, BagSlots.IndexOf(slot));
                 return;
             }
         }
