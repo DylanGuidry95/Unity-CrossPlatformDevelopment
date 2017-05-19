@@ -11,60 +11,86 @@ namespace Physics
 {
     public class PhysicsTrigger : MonoBehaviour
     {
-        public List<UnityEvent<GameObject>> Events = new List<UnityEvent<GameObject>>();
-        [SerializeField]
-        private OnEnterTrigger onEnterTrigger;
-        [SerializeField]
-        private OnExitTrigger onExitTrigger;
-        [SerializeField]
-        private OnEnterCollision onEnterCollision;
-        [SerializeField]
+        public List<UnityEvent<GameObject>> Events = new List<UnityEvent<GameObject>>();        
+        public OnEnterTrigger onEnterTrigger;        
+        private OnExitTrigger onExitTrigger;        
+        private OnEnterCollision onEnterCollision;        
         private OnExitCollision onExitCollision;
-
-        public void AddOnTriggerEnter()
-        {
+#region AddEvents    
+        public bool AddOnTriggerEnter()
+        {            
             if (Events.Contains(onEnterTrigger))
-            {
-                Debug.Log("Event all ready in list");
-                return;
+            {                            
+                return false;
             }
             onEnterTrigger = new OnEnterTrigger();
             Events.Add(onEnterTrigger);
+            return true;
         }
 
-        public void AddOnTriggerExit()
+        public bool AddOnTriggerExit()
         {
             if (Events.Contains(onExitTrigger))
-            {
-                Debug.Log("Event all ready in list");
-                return;
+            {                
+                return false;
             }
             onExitTrigger = new OnExitTrigger();            
             Events.Add(onExitTrigger);
+            return true;
         }
 
-        public void AddOnCollisionEnter()
+        public bool AddOnCollisionEnter()
         {
             if (Events.Contains(onEnterCollision))
-            {
-                Debug.Log("Event all ready in list");
-                return;
+            {                
+                return false;
             }
             onEnterCollision = new OnEnterCollision();
             Events.Add(onEnterCollision);
+            return true;
         }
 
-        public void AddOnCollisionExit()
+        public bool AddOnCollisionExit()
         {
             if (Events.Contains(onExitCollision))
             {
-                Debug.Log("Event all ready in list");
-                return;
+                return false;
             }
-            onExitCollision = new OnExitCollision();
-            onEnterCollision.AddListener(FindObjectOfType<SpikeyShield>().Block);
+            onExitCollision = new OnExitCollision();            
             Events.Add(onExitCollision);
+            return true;
         }
+        #endregion
+
+#region RemoveEvents                   
+        public void RemoveOnTriggerEnter()
+        {
+            if (!Events.Contains(onEnterTrigger)) return;
+            Events.Remove(onEnterTrigger);
+            onEnterTrigger = null;
+        }
+
+        public void RemoveOnTriggerExit()
+        {
+            if (!Events.Contains(onExitTrigger)) return;
+            Events.Remove(onExitTrigger);
+            onExitTrigger = null;
+        }
+
+        public void RemoveOnCollisionEnter()
+        {
+            if (!Events.Contains(onEnterCollision)) return;
+            Events.Remove(onEnterCollision);
+            onEnterCollision = null;
+        }
+
+        public void RemoveOnCollisionExit()
+        {
+            if (!Events.Contains(onExitCollision)) return;
+            Events.Remove(onExitCollision);
+            onExitCollision = null;
+        }
+#endregion
     }
 
     [Serializable]
@@ -91,32 +117,92 @@ namespace Physics
     [CustomEditor(typeof(PhysicsTrigger))]
     class InspectorPhysicsTrigger : Editor
     {
-        private List<bool> DropDowns;
+        public List<bool> DropDowns = new List<bool>();
+        public List<string> EventNames = new List<string>();
+
+        public List<string> ButtonText = new List<string>()
+        {
+            "AddOnEnterTrigger",
+            "AddOnExitTrigger",
+            "AddOnEnterCollision",
+            "AddOnExitCollision"
+        };
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
             var classRef = target as PhysicsTrigger;
 
-            if (GUILayout.Button("OnEnterTrigger"))
+            if (GUILayout.Button(ButtonText[0]))
             {
-                classRef.AddOnTriggerEnter();
+                if (classRef.AddOnTriggerEnter())
+                {
+                    DropDowns.Add(true);
+                    EventNames.Add("OnEnterTrigger");
+                    ButtonText[0] = "RemoveOnEnterTrigger";
+                }
+                else
+                {
+                    classRef.RemoveOnTriggerEnter();
+                    ButtonText[0] = "AddOnEnterTrigger";
+                    DropDowns.RemoveAt(EventNames.IndexOf("OnEnterTrigger"));
+                    EventNames.Remove("OnEnterTrigger");
+                }
             }
-            if (GUILayout.Button("OnExitTrigger"))
+            if (GUILayout.Button(ButtonText[1]))
             {
-                classRef.AddOnTriggerExit();
+                if (classRef.AddOnTriggerExit())
+                {
+                    DropDowns.Add(true);
+                    EventNames.Add("OnExitTrigger");
+                    ButtonText[1] = "RemoveOnExitTrigger";
+                }
+                else
+                {
+                    classRef.RemoveOnTriggerEnter();
+                    ButtonText[0] = "AddOnExitTrigger";
+                    DropDowns.RemoveAt(EventNames.IndexOf("OnExitTrigger"));
+                    EventNames.Remove("OnExitTrigger");
+                }
             }
-            if (GUILayout.Button("OnEnterCollision"))
+            if (GUILayout.Button(ButtonText[2]))
             {
-                classRef.AddOnCollisionEnter();
+                if (classRef.AddOnCollisionEnter())
+                {
+                    DropDowns.Add(true); 
+                    EventNames.Add("OnEnterCollision");
+                    ButtonText[2] = "RemoveOnEnterCollision";
+                }
+                else
+                {
+                    classRef.RemoveOnCollisionEnter();
+                    ButtonText[2] = "AddOnEnterCollision";
+                    DropDowns.RemoveAt(EventNames.IndexOf("OnEnterCollision"));
+                    EventNames.Remove("OnEnterCollision");
+                }
             }
-            if (GUILayout.Button("OnExitCollision"))
+            if (GUILayout.Button(ButtonText[3]))
             {
-                classRef.AddOnCollisionExit();
+                if (classRef.AddOnCollisionExit())
+                {
+                    DropDowns.Add(true);
+                    EventNames.Add("OnExitCollision");
+                    ButtonText[2] = "RemoveOnExitCollision";
+                }
+                else
+                {
+                    classRef.RemoveOnCollisionExit();
+                    DropDowns.Add(true);
+                    EventNames.Add("OnExitCollision");
+                    ButtonText[3] = "RemoveOnExitCollision"; 
+                }
             }
-
-            foreach (var physicEvent in classRef.Events)
+            for (var i = 0; i < DropDowns.Count; i++)
             {
-                GUILayout.Label(physicEvent.GetType().ToString());
+                DropDowns[i] = EditorGUILayout.Foldout(DropDowns[i], EventNames[i]);
+                if (DropDowns[i])
+                {
+                    GUILayout.Label("Text");
+                }
             }
         }
     }
